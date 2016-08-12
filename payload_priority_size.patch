@@ -1,0 +1,26 @@
+From 03bd990d588f9c5665888c0350cfea2ed98adb3a Mon Sep 17 00:00:00 2001
+From: nik- <nikita@ulmon.com>
+Date: Fri, 12 Aug 2016 11:48:08 +0200
+Subject: [PATCH] Fix priority field to be 1 byte. see
+ https://github.com/steeve/go-libapns/commit/0d1c9ccaf4d3a9c914df2f12c140907e4b501a20
+
+---
+ connection.go | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/connection.go b/connection.go
+index f69bb99..0fb1ac6 100644
+--- a/connection.go
++++ b/connection.go
+@@ -473,7 +473,7 @@ func (c *APNSConnection) bufferPayload(idPayloadObj *idPayload) error {
+ 	//write priority if set correctly
+ 	if idPayloadObj.Payload.Priority == 10 || idPayloadObj.Payload.Priority == 5 {
+ 		binary.Write(c.inFlightItemByteBuffer, binary.BigEndian, uint8(5))
+-		binary.Write(c.inFlightItemByteBuffer, binary.BigEndian, uint16(4))
++		binary.Write(c.inFlightItemByteBuffer, binary.BigEndian, uint16(1))
+ 		binary.Write(c.inFlightItemByteBuffer, binary.BigEndian, idPayloadObj.Payload.Priority)
+ 	}
+ 
+-- 
+2.5.4 (Apple Git-61)
+
