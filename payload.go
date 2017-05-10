@@ -13,6 +13,7 @@ type Payload struct {
 	Badge            BadgeNumber
 	Sound            string
 	ContentAvailable int
+	MutableContent   int // When set to 1 indicates to the system to call your Notification Service extension to mutate or replace the notification's content
 	Category         string
 
 	// If this is an enhanced message, use
@@ -59,6 +60,7 @@ type alertBodyAps struct {
 	Sound            string
 	Category         string
 	ContentAvailable int
+	MutableContent   int // `json:"mutable-content,omitempty"`
 }
 
 type simpleAps struct {
@@ -67,6 +69,7 @@ type simpleAps struct {
 	Sound            string
 	Category         string
 	ContentAvailable int
+	MutableContent   int // `json:"mutable-content,omitempty"`
 }
 
 // Convert a Payload into a json object and then converted to a byte array
@@ -112,6 +115,7 @@ func (p *Payload) marshalSimplePayload(maxPayloadSize int) ([]byte, error) {
 		Sound:            p.Sound,
 		Category:         p.Category,
 		ContentAvailable: p.ContentAvailable,
+		MutableContent:   p.MutableContent,
 	}
 
 	fullPayload, err := constructFullPayload(aps, p.CustomFields)
@@ -158,6 +162,7 @@ func (p *Payload) marshalAlertBodyPayload(maxPayloadSize int) ([]byte, error) {
 		Sound:            p.Sound,
 		Category:         p.Category,
 		ContentAvailable: p.ContentAvailable,
+		MutableContent:   p.MutableContent,
 	}
 
 	fullPayload, err := constructFullPayload(aps, p.CustomFields)
@@ -210,6 +215,9 @@ func (s simpleAps) MarshalJSON() ([]byte, error) {
 	if s.ContentAvailable != 0 {
 		toMarshal["content-available"] = s.ContentAvailable
 	}
+	if s.MutableContent != 0 {
+		toMarshal["mutable-content"] = s.MutableContent
+	}
 
 	return json.Marshal(toMarshal)
 }
@@ -229,6 +237,9 @@ func (a alertBodyAps) MarshalJSON() ([]byte, error) {
 	}
 	if a.ContentAvailable != 0 {
 		toMarshal["content-available"] = a.ContentAvailable
+	}
+	if a.MutableContent != 0 {
+		toMarshal["mutable-content"] = a.MutableContent
 	}
 
 	return json.Marshal(toMarshal)
